@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.sec.mapper.secondary.SendSmsMapper">
+
+    <select id="isExsist" parameterType="string" resultType="int">
+        select count(1) from sms_platform_send_info where send_id_no = #{activityId}
+    </select>
+
+    <select id="currentHistoryTableIsExist" parameterType="string" resultType="int">
+        select count(1) from information_schema.tables where table_schema= 'sms' and table_name = #{tableName}
+    </select>
+
+    <select id="getSendFailedNum" parameterType="java.util.Map" resultType="com.asiainfo.sec.entity.CntBean">
+        select
+            sum(a.sum) cnt,
+            city_id
+        from
+            (
+                select
+                    count(distinct phone_no) sum,
+                    city_id,
+                    send_id_no
+                from
+                    ${tableName}
+                where
+                    business_id = #{businessId}
+                and send_state != 0
+                and send_state != 7
+                and city_id != ''
+                and city_id is not null
+                and date_format(op_time,'%Y-%m-%d %T') <![CDATA[>= ]]> #{fromTime}
+                and date_format(op_time,'%Y-%m-%d %T') <![CDATA[<= ]]> #{toTime}
+                group by
+                    send_id_no,city_id
+            ) a
+        group by
+            city_id
+    </select>
+
+    <select id="getCurrentDate" resultType="string">
+        select date_format(now(),'%Y-%m-%d %T') as currentDate;
+    </select>
+
+    <update id="createExtraTab" parameterType="string">
+        create table ${tabName} (
+            phone_no varchar(15) NOT NULL ,
+            send_msg varchar(2000) DEFAULT NULL,
+            PRIMARY KEY (phone_no)
+        )
+    </update>
+
+    <insert id="recordExtraUsers" >
+        insert into ${tableName} (
+          phone_no
+        ) values (
+        <foreach collection="list" item="item" index="index" separator="),(">
+            #{item}
+        </foreach>
+        )
+    </insert>
+
+</mapper>

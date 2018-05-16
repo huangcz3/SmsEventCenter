@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.sec.mapper.primary.InitMapper">
+    <resultMap id="channelQuotaMap" type="com.asiainfo.sec.model.QuotaPojo" >
+       <!-- <id column="channel_id" property="channelId"></id>-->
+        <result column="channel_id" property="channelId"></result>
+            <collection property="quotaList" ofType="map" column="channel_id">
+                    <result column="city_id" property="cityId"></result>
+                    <result column="send_limit" property="quotaCnt"></result>
+            </collection>
+    </resultMap>
+
+    <select id="getChannelQuota" resultMap="channelQuotaMap">
+        select * from surfing_send_quota
+    </select>
+</mapper>

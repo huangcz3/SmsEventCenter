@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: asiainfo.sms:asiainfo.sms.client:1.2.3-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/asiainfo/sms/asiainfo.sms.client/1.2.3-SNAPSHOT/asiainfo.sms.client-1.2.3-20180112.063650-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/asiainfo/sms/asiainfo.sms.client/1.2.3-SNAPSHOT/asiainfo.sms.client-1.2.3-20180112.063650-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/asiainfo/sms/asiainfo.sms.client/1.2.3-SNAPSHOT/asiainfo.sms.client-1.2.3-20180112.063650-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

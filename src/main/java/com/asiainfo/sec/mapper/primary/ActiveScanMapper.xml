@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.sec.mapper.primary.ActiveScanMapper">
+
+    <select id="getActSmsSendList" parameterType="string" resultType="com.asiainfo.sec.entity.ActiveSmsBean">
+        select
+        a.activity_id ,
+        a.activity_name ,
+        a.city_id ,
+        a.city_name ,
+        VARCHAR_FORMAT(a.start_time,'yyyymmdd') start_time,
+        VARCHAR_FORMAT(a.end_time,'yyyymmdd') end_time,
+        b.channel_id ,
+        b.channel_name ,
+        b.rule_value smsContent,
+        c.approve_time
+        from activity_info a
+        left join activity_channel_info b on a.activity_id = b.activity_id and b.rule_id='R001'
+        left join activity_approval_info c on c.activity_id = a.activity_id
+        where a.activity_state in (6,8) and a.stopped = 0 and c.approver_level = 3
+        and VARCHAR_FORMAT(c.approve_time,'yyyymmdd') <![CDATA[>= ]]> VARCHAR_FORMAT( current_date - ${intervalDay} day  ,'yyyymmdd')
+        and VARCHAR_FORMAT(c.approve_time,'yyyymmdd') <![CDATA[<= ]]> VARCHAR_FORMAT(current_date,'yyyymmdd')
+        and deleted = 0 and b.channel_id = #{channelId}
+        and a.scene_flag = 0
+        and (select count(1) as num from sms_activity_send_info d where d.activity_id = a.activity_id) =0
+    </select>
+
+    <select id="getDB2CurrentDate" resultType="java.lang.String">
+        select VARCHAR_FORMAT(current date,'yyyymmdd') as currentDate from sysibm.sysdummy1
+    </select>
+
+    <select id="getQuotaNum" resultType="com.asiainfo.sec.entity.CntBean">
+        select
+        case
+        when b.city_id is null then
+        a.city_id
+        else
+        b.city_id
+        end city_id,
+        case
+        when b.cnt is null then
+        a.send_limit
+        else
+        b.cnt
+        end cnt
+        from
+        surfing_send_quota a
+        left join (
+        select
+        city_id,
+        send_limit as cnt
+        from
+        surfing_send_quota
+        where
+        effective = 1
+        and channel_id = #{channelId}
+        and effect_time = #{appointyyyymm}
+        ) b on a.city_id = b.city_id
+        where
+        a.channel_id =  #{channelId}
+        and a.effect_time = #{currentyyyymm}
+    </select>
+
+    <select id="saveSmsActivitySendInfo" parameterType="java.util.Map" >
+        insert into sms_activity_send_info(
+        activity_id,
+        activity_name,
+        city_id,
+        channel_id,
+        start_time,
+        end_time
+        ) values(
+        #{activityId},
+        #{activityName},
+        #{cityId},
+        #{channelId},
+        #{startTime},
+        #{endTime}
+        )
+    </select>
+
+    <select id="updateSmsActivitySendInfo" parameterType="java.util.Map">
+        update sms_activity_send_info
+        <set>
+            <if test="customerCount != null" >
+                customer_count = #{customerCount},
+            </if>
+            <if test="recordedCount != null" >
+                recorded_count = #{recordedCount},
+            </if>
+        </set>
+        where activity_id = #{activityId}
+    </select>
+
+</mapper>

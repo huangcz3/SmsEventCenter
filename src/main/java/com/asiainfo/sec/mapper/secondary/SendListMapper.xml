@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.asiainfo.sec.mapper.secondary.SendListMapper">
+
+    <insert id="sendList" parameterType="com.asiainfo.sec.entity.PhoneNum">
+      insert into sms_platform_send_list_20171228171200 (
+        phone_no,
+        send_msg,
+        create_time
+      ) values (
+        <foreach collection="list" item="item" index="index" separator="),(">
+            #{item.phonenum},
+            #{item.content},
+            now()
+        </foreach>
+      )
+    </insert>
+
+</mapper>

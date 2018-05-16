@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.sec.mapper.primary.FilterSuringMapper">
+    <select id="getPhoneNum" resultType="com.asiainfo.sec.entity.PhoneNum">
+        select
+          a.mobile phonenum,
+          a.content
+        from aiapp.dw_cmread_mobile_content a
+        left join ${tabName} b on a.mobile = b.phone_no and b.data_swzs_1_column = 1
+        where b.phone_no is not null and  varchar_format(a.op_time,'yyyymmdd') >= #{yyyymmdd}
+    </select>
+</mapper>
